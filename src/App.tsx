@@ -16,6 +16,11 @@ import EmployeeProfile from "./pages/employees/EmployeeProfile";
 import LeaveManagement from "./pages/leave/LeaveManagement";
 import AttendanceManagement from "./pages/attendance/AttendanceManagement";
 
+// Employee Pages
+import MyProfile from "./pages/employee/MyProfile";
+import MyLeaves from "./pages/employee/MyLeaves";
+import MyAttendance from "./pages/employee/MyAttendance";
+
 // Providers
 import { AuthProvider } from "./context/AuthContext";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
@@ -37,10 +42,21 @@ const App = () => (
             {/* Dashboard Routes */}
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
+              
+              {/* HR and Admin Routes */}
               <Route path="employees" element={<EmployeeDirectory />} />
               <Route path="employees/:id" element={<EmployeeProfile />} />
               <Route path="leave" element={<LeaveManagement />} />
               <Route path="attendance" element={<AttendanceManagement />} />
+              
+              {/* Employee Routes */}
+              <Route path="my-profile" element={<MyProfile />} />
+              <Route path="my-leaves" element={<MyLeaves />} />
+              <Route path="my-attendance" element={<MyAttendance />} />
+              <Route path="my-documents" element={<NotFound />} /> {/* Placeholder for future implementation */}
+              <Route path="my-payslips" element={<NotFound />} /> {/* Placeholder for future implementation */}
+              <Route path="my-performance" element={<NotFound />} /> {/* Placeholder for future implementation */}
+              <Route path="help-desk" element={<NotFound />} /> {/* Placeholder for future implementation */}
             </Route>
 
             {/* 404 Route */}

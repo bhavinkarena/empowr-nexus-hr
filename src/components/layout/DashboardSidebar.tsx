@@ -1,7 +1,8 @@
 
 import { 
   Users, LayoutDashboard, Calendar, ClipboardCheck, 
-  DollarSign, Briefcase, Award, Settings, LogOut 
+  DollarSign, Briefcase, Award, Settings, LogOut, 
+  FileText, User, MessageSquare
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -28,7 +29,33 @@ export function DashboardSidebar() {
   };
 
   // Define menu items based on user role
-  const mainMenuItems = [
+  const mainMenuItems = user?.role === 'employee' ? [
+    {
+      title: 'My Dashboard',
+      icon: LayoutDashboard,
+      url: '/dashboard',
+    },
+    {
+      title: 'My Profile',
+      icon: User,
+      url: '/dashboard/my-profile',
+    },
+    {
+      title: 'Leave Requests',
+      icon: Calendar,
+      url: '/dashboard/my-leaves',
+    },
+    {
+      title: 'Attendance',
+      icon: ClipboardCheck,
+      url: '/dashboard/my-attendance',
+    },
+    {
+      title: 'Documents',
+      icon: FileText,
+      url: '/dashboard/my-documents',
+    },
+  ] : [
     {
       title: 'Dashboard',
       icon: LayoutDashboard,
@@ -67,6 +94,25 @@ export function DashboardSidebar() {
       title: 'Performance',
       icon: Award,
       url: '/dashboard/performance',
+    },
+  ] : [];
+
+  // Employee specific secondary menu items
+  const employeeMenuItems = user?.role === 'employee' ? [
+    {
+      title: 'Payslips',
+      icon: DollarSign,
+      url: '/dashboard/my-payslips',
+    },
+    {
+      title: 'Performance',
+      icon: Award,
+      url: '/dashboard/my-performance',
+    },
+    {
+      title: 'Request Help',
+      icon: MessageSquare,
+      url: '/dashboard/help-desk',
     },
   ] : [];
 
@@ -112,6 +158,29 @@ export function DashboardSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {adminMenuItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <button 
+                        onClick={() => navigate(item.url)}
+                        className="w-full flex items-center"
+                      >
+                        <item.icon size={18} />
+                        <span>{item.title}</span>
+                      </button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+        
+        {employeeMenuItems.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>My HR</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {employeeMenuItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
                       <button 
