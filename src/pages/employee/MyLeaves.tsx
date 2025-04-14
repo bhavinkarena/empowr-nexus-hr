@@ -33,7 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar as CalendarIcon, Plus, Clock, Calendar } from "lucide-react";
+import { CalendarIcon, Plus, Clock } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -233,6 +233,7 @@ export default function MyLeaves() {
                               onSelect={field.onChange}
                               disabled={(date) => date < new Date()}
                               initialFocus
+                              className="pointer-events-auto"
                             />
                           </PopoverContent>
                         </Popover>
@@ -275,6 +276,7 @@ export default function MyLeaves() {
                                 return date < (fromDate || new Date());
                               }}
                               initialFocus
+                              className="pointer-events-auto"
                             />
                           </PopoverContent>
                         </Popover>
