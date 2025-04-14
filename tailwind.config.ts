@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,21 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Custom HR Portal colors
+				'hr-purple': {
+					100: '#E5DEFF',
+					200: '#D6BCFA',
+					300: '#9b87f5',
+					400: '#7E69AB',
+					500: '#6E59A5',
+					600: '#1A1F2C',
+				},
+				'hr-green': '#F2FCE2',
+				'hr-yellow': '#FEF7CD',
+				'hr-orange': '#FEC6A1',
+				'hr-blue': '#D3E4FD',
+				'hr-gray': '#F1F0FB',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +99,22 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out'
 			}
 		}
 	},
