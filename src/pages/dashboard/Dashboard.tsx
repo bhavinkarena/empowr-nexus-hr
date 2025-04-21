@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -21,6 +22,7 @@ import {
 import { Clock, Users, Calendar, Briefcase } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Loader } from "@/components/ui/Loader";
+import { useEffect, useState } from "react";
 
 const departmentData = [
   { name: "Engineering", count: 42 },
@@ -48,8 +50,20 @@ const leaveData = [
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
 
-  if (!user) {
+  useEffect(() => {
+    if (user) {
+      // Show loader for 3 seconds then stop loading
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
+
+  if (!user || loading) {
     return (
       <div className="flex items-center justify-center min-h-[35vh]">
         <Loader size={48} />
