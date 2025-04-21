@@ -1,4 +1,3 @@
-
 import {
   Card,
   CardContent,
@@ -21,8 +20,8 @@ import {
 } from "recharts";
 import { Clock, Users, Calendar, Briefcase } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { Loader } from "@/components/ui/Loader";
 
-// Mock data for charts
 const departmentData = [
   { name: "Engineering", count: 42 },
   { name: "Sales", count: 28 },
@@ -50,6 +49,14 @@ const leaveData = [
 export default function Dashboard() {
   const { user } = useAuth();
 
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[35vh]">
+        <Loader size={48} />
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-8">
@@ -59,7 +66,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardContent className="p-6 flex items-center">
@@ -110,7 +116,6 @@ export default function Dashboard() {
         </Card>
       </div>
       
-      {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Card className="col-span-1">
           <CardHeader>
@@ -172,7 +177,6 @@ export default function Dashboard() {
         </Card>
       </div>
       
-      {/* Weekly Attendance Chart */}
       <Card className="col-span-2">
         <CardHeader>
           <CardTitle>Weekly Attendance</CardTitle>
