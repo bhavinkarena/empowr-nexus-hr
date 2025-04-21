@@ -20,6 +20,7 @@ import AttendanceManagement from "./pages/attendance/AttendanceManagement";
 import MyProfile from "./pages/employee/MyProfile";
 import MyLeaves from "./pages/employee/MyLeaves";
 import MyAttendance from "./pages/employee/MyAttendance";
+import MyDocuments from "./pages/employee/MyDocuments";
 
 // Providers
 import { AuthProvider } from "./context/AuthContext";
@@ -53,7 +54,7 @@ const App = () => (
               <Route path="my-profile" element={<MyProfile />} />
               <Route path="my-leaves" element={<MyLeaves />} />
               <Route path="my-attendance" element={<MyAttendance />} />
-              <Route path="my-documents" element={<NotFound />} /> {/* Placeholder for future implementation */}
+              <Route path="my-documents" element={<MyDocuments />} /> {/* Now using the actual MyDocuments component */}
               <Route path="my-payslips" element={<NotFound />} /> {/* Placeholder for future implementation */}
               <Route path="my-performance" element={<NotFound />} /> {/* Placeholder for future implementation */}
               <Route path="help-desk" element={<NotFound />} /> {/* Placeholder for future implementation */}
