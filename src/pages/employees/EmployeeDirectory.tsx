@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -19,14 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -42,6 +33,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -53,7 +52,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Search, Plus, MoreVertical, Filter, UserPlus } from "lucide-react";
+import { Search, Plus, UserPlus, MoreVertical, Filter } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 // Mock data for employees
@@ -137,7 +136,11 @@ export default function EmployeeDirectory() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+  
+  const itemsPerPage = 5;
+  const lastPage = Math.ceil(employees.length / itemsPerPage);
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
@@ -175,6 +178,7 @@ export default function EmployeeDirectory() {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page on search
   };
 
   const handleDepartmentFilter = (value: string) => {
@@ -191,6 +195,15 @@ export default function EmployeeDirectory() {
     
     return matchesSearch && matchesDepartment;
   });
+
+  const paginatedEmployees = filteredEmployees.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="animate-fade-in">
@@ -403,8 +416,8 @@ export default function EmployeeDirectory() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredEmployees.length > 0 ? (
-                  filteredEmployees.map((employee) => (
+                {paginatedEmployees.length > 0 ? (
+                  paginatedEmployees.map((employee) => (
                     <TableRow key={employee.id}>
                       <TableCell className="font-medium">
                         <Link 
@@ -462,6 +475,35 @@ export default function EmployeeDirectory() {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          <div className="mt-4 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {Array.from({ length: lastPage }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={currentPage === lastPage ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         </CardContent>
       </Card>
