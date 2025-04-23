@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar, Plus, Search } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,8 +26,17 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-// Mock leave requests
 const leaveRequests = [
   {
     id: "1",
@@ -64,7 +73,6 @@ const leaveRequests = [
   },
 ];
 
-// Function to format dates
 const formatDate = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
   return new Date(dateString).toLocaleDateString('en-US', options);
@@ -73,10 +81,35 @@ const formatDate = (dateString: string) => {
 export default function LeaveManagement() {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState<typeof leaveRequests[0] | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const handleViewClick = (leave: typeof leaveRequests[0]) => {
     setSelectedLeave(leave);
     setViewModalOpen(true);
+  };
+
+  const filterLeaves = (leaves: typeof leaveRequests) => {
+    return leaves.filter(leave => 
+      leave.employee.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      leave.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      leave.reason.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
+  const paginateLeaves = (leaves: typeof leaveRequests) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return leaves.slice(startIndex, endIndex);
+  };
+
+  const generatePaginationRange = (totalPages: number) => {
+    const range = [];
+    for (let i = 1; i <= totalPages; i++) {
+      range.push(i);
+    }
+    return range;
   };
 
   return (
@@ -146,6 +179,21 @@ export default function LeaveManagement() {
           <TabsTrigger value="rejected">Rejected</TabsTrigger>
         </TabsList>
         
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search by employee, type, or reason..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="pl-10"
+            />
+          </div>
+        </div>
+
         <TabsContent value="all">
           <Card>
             <CardHeader>
@@ -169,50 +217,96 @@ export default function LeaveManagement() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {leaveRequests.map((request) => (
-                      <TableRow key={request.id}>
-                        <TableCell className="font-medium">{request.employee}</TableCell>
-                        <TableCell>{request.type}</TableCell>
-                        <TableCell>
-                          {formatDate(request.from)} - {formatDate(request.to)}
-                        </TableCell>
-                        <TableCell>{request.days}</TableCell>
-                        <TableCell className="max-w-[200px] truncate">{request.reason}</TableCell>
-                        <TableCell>
-                          <Badge
-                            className={
-                              request.status === "Approved"
-                                ? "bg-green-100 text-green-800 hover:bg-green-100"
-                                : request.status === "Rejected"
-                                ? "bg-red-100 text-red-800 hover:bg-red-100"
-                                : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-                            }
-                          >
-                            {request.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button size="sm" variant="outline" onClick={() => handleViewClick(request)}>
-                              View
-                            </Button>
-                            {request.status === "Pending" && (
-                              <>
-                                <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700">
-                                  Approve
-                                </Button>
-                                <Button size="sm" variant="destructive">
-                                  Reject
-                                </Button>
-                              </>
-                            )}
-                          </div>
+                    {paginateLeaves(filterLeaves(leaveRequests)).length > 0 ? (
+                      paginateLeaves(filterLeaves(leaveRequests)).map((request) => (
+                        <TableRow key={request.id}>
+                          <TableCell className="font-medium">{request.employee}</TableCell>
+                          <TableCell>{request.type}</TableCell>
+                          <TableCell>
+                            {formatDate(request.from)} - {formatDate(request.to)}
+                          </TableCell>
+                          <TableCell>{request.days}</TableCell>
+                          <TableCell className="max-w-[200px] truncate">{request.reason}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                request.status === "Approved"
+                                  ? "bg-green-100 text-green-800 hover:bg-green-100"
+                                  : request.status === "Rejected"
+                                  ? "bg-red-100 text-red-800 hover:bg-red-100"
+                                  : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+                              }
+                            >
+                              {request.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <Button size="sm" variant="outline" onClick={() => handleViewClick(request)}>
+                                View
+                              </Button>
+                              {request.status === "Pending" && (
+                                <>
+                                  <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700">
+                                    Approve
+                                  </Button>
+                                  <Button size="sm" variant="destructive">
+                                    Reject
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="h-24 text-center">
+                          No leave requests found
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
               </div>
+              
+              {filterLeaves(leaveRequests).length > itemsPerPage && (
+                <div className="mt-4">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                      
+                      {generatePaginationRange(Math.ceil(filterLeaves(leaveRequests).length / itemsPerPage))
+                        .map((page) => (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(page)}
+                              isActive={currentPage === page}
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(prev => 
+                            Math.min(Math.ceil(filterLeaves(leaveRequests).length / itemsPerPage), prev + 1)
+                          )}
+                          className={currentPage === Math.ceil(filterLeaves(leaveRequests).length / itemsPerPage) 
+                            ? "pointer-events-none opacity-50" 
+                            : ""}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
