@@ -1,4 +1,4 @@
-
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -18,6 +18,14 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Plus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 // Mock leave requests
 const leaveRequests = [
@@ -63,6 +71,14 @@ const formatDate = (dateString: string) => {
 };
 
 export default function LeaveManagement() {
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedLeave, setSelectedLeave] = useState<typeof leaveRequests[0] | null>(null);
+
+  const handleViewClick = (leave: typeof leaveRequests[0]) => {
+    setSelectedLeave(leave);
+    setViewModalOpen(true);
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-8">
@@ -177,7 +193,7 @@ export default function LeaveManagement() {
                         </TableCell>
                         <TableCell>
                           <div className="flex space-x-2">
-                            <Button size="sm" variant="outline">
+                            <Button size="sm" variant="outline" onClick={() => handleViewClick(request)}>
                               View
                             </Button>
                             {request.status === "Pending" && (
@@ -366,6 +382,72 @@ export default function LeaveManagement() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={viewModalOpen} onOpenChange={setViewModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Leave Request Details</DialogTitle>
+            <DialogDescription>
+              Detailed information for the selected leave request.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedLeave && (
+            <div className="space-y-3 pt-2">
+              <div>
+                <span className="block text-muted-foreground text-xs">Employee</span>
+                <span className="font-semibold">{selectedLeave.employee}</span>
+              </div>
+              <div className="flex gap-4">
+                <div>
+                  <span className="block text-muted-foreground text-xs">Type</span>
+                  <span>{selectedLeave.type}</span>
+                </div>
+                <div>
+                  <span className="block text-muted-foreground text-xs">Status</span>
+                  <Badge
+                    className={
+                      selectedLeave.status === "Approved"
+                        ? "bg-green-100 text-green-800 hover:bg-green-100"
+                        : selectedLeave.status === "Rejected"
+                        ? "bg-red-100 text-red-800 hover:bg-red-100"
+                        : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+                    }
+                  >
+                    {selectedLeave.status}
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div>
+                  <span className="block text-muted-foreground text-xs">From</span>
+                  <span>{formatDate(selectedLeave.from)}</span>
+                </div>
+                <div>
+                  <span className="block text-muted-foreground text-xs">To</span>
+                  <span>{formatDate(selectedLeave.to)}</span>
+                </div>
+                <div>
+                  <span className="block text-muted-foreground text-xs">Days</span>
+                  <span>{selectedLeave.days}</span>
+                </div>
+              </div>
+              <div>
+                <span className="block text-muted-foreground text-xs">Reason</span>
+                <span>{selectedLeave.reason}</span>
+              </div>
+              <div>
+                <span className="block text-muted-foreground text-xs">Applied On</span>
+                <span>{formatDate(selectedLeave.appliedOn)}</span>
+              </div>
+            </div>
+          )}
+          <DialogClose asChild>
+            <Button variant="outline" className="mt-6 w-full">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
