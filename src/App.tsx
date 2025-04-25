@@ -15,6 +15,8 @@ import EmployeeDirectory from "./pages/employees/EmployeeDirectory";
 import EmployeeProfile from "./pages/employees/EmployeeProfile";
 import LeaveManagement from "./pages/leave/LeaveManagement";
 import AttendanceManagement from "./pages/attendance/AttendanceManagement";
+import DepartmentDirectory from "./pages/departments/DepartmentDirectory";
+import DesignationDirectory from "./pages/designations/DesignationDirectory";
 
 // Employee Pages
 import MyProfile from "./pages/employee/MyProfile";
