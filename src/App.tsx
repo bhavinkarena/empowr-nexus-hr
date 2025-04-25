@@ -47,6 +47,8 @@ const App = () => (
               {/* HR and Admin Routes */}
               <Route path="employees" element={<EmployeeDirectory />} />
               <Route path="employees/:id" element={<EmployeeProfile />} />
+              <Route path="departments" element={<DepartmentDirectory />} />
+              <Route path="designations" element={<DesignationDirectory />} />
               <Route path="leave" element={<LeaveManagement />} />
               <Route path="attendance" element={<AttendanceManagement />} />
               
@@ -54,10 +56,10 @@ const App = () => (
               <Route path="my-profile" element={<MyProfile />} />
               <Route path="my-leaves" element={<MyLeaves />} />
               <Route path="my-attendance" element={<MyAttendance />} />
-              <Route path="my-documents" element={<MyDocuments />} /> {/* Now using the actual MyDocuments component */}
-              <Route path="my-payslips" element={<NotFound />} /> {/* Placeholder for future implementation */}
-              <Route path="my-performance" element={<NotFound />} /> {/* Placeholder for future implementation */}
-              <Route path="help-desk" element={<NotFound />} /> {/* Placeholder for future implementation */}
+              <Route path="my-documents" element={<MyDocuments />} />
+              <Route path="my-payslips" element={<NotFound />} />
+              <Route path="my-performance" element={<NotFound />} />
+              <Route path="help-desk" element={<NotFound />} />
             </Route>
 
             {/* 404 Route */}

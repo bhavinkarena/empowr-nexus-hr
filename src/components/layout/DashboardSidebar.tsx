@@ -1,8 +1,7 @@
-
 import { 
   Users, LayoutDashboard, Calendar, ClipboardCheck, 
   DollarSign, Briefcase, Award, Settings, LogOut, 
-  FileText, User, MessageSquare
+  FileText, User, MessageSquare, Building
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -28,7 +27,6 @@ export function DashboardSidebar() {
     navigate('/login');
   };
 
-  // Define menu items based on user role
   const mainMenuItems = user?.role === 'employee' ? [
     {
       title: 'My Dashboard',
@@ -67,6 +65,16 @@ export function DashboardSidebar() {
       url: '/dashboard/employees',
     },
     {
+      title: 'Departments',
+      icon: Building,
+      url: '/dashboard/departments',
+    },
+    {
+      title: 'Designations',
+      icon: Briefcase,
+      url: '/dashboard/designations',
+    },
+    {
       title: 'Leave Management',
       icon: Calendar,
       url: '/dashboard/leave',
@@ -78,7 +86,6 @@ export function DashboardSidebar() {
     },
   ];
 
-  // Admin and HR specific menu items
   const adminMenuItems = user?.role !== 'employee' ? [
     {
       title: 'Payroll',
@@ -97,7 +104,6 @@ export function DashboardSidebar() {
     },
   ] : [];
 
-  // Employee specific secondary menu items
   const employeeMenuItems = user?.role === 'employee' ? [
     {
       title: 'Payslips',
