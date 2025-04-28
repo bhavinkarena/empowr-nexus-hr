@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +16,11 @@ import LeaveManagement from "./pages/leave/LeaveManagement";
 import AttendanceManagement from "./pages/attendance/AttendanceManagement";
 import DepartmentDirectory from "./pages/departments/DepartmentDirectory";
 import DesignationDirectory from "./pages/designations/DesignationDirectory";
+
+// Admin Pages
+import PayrollManagement from "./pages/admin/PayrollManagement";
+import RecruitmentManagement from "./pages/admin/RecruitmentManagement";
+import PerformanceManagement from "./pages/admin/PerformanceManagement";
 
 // Employee Pages
 import MyProfile from "./pages/employee/MyProfile";
@@ -40,6 +44,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -55,6 +60,9 @@ const App = () => (
               <Route path="designations" element={<DesignationDirectory />} />
               <Route path="leave" element={<LeaveManagement />} />
               <Route path="attendance" element={<AttendanceManagement />} />
+              <Route path="payroll" element={<PayrollManagement />} />
+              <Route path="recruitment" element={<RecruitmentManagement />} />
+              <Route path="performance" element={<PerformanceManagement />} />
               
               {/* Employee Routes */}
               <Route path="my-profile" element={<MyProfile />} />
