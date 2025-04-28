@@ -23,6 +23,8 @@ import MyProfile from "./pages/employee/MyProfile";
 import MyLeaves from "./pages/employee/MyLeaves";
 import MyAttendance from "./pages/employee/MyAttendance";
 import MyDocuments from "./pages/employee/MyDocuments";
+import PayslipList from "./pages/payroll/PayslipList";
+import PerformanceDashboard from "./pages/performance/PerformanceDashboard";
 
 // Providers
 import { AuthProvider } from "./context/AuthContext";
@@ -59,8 +61,8 @@ const App = () => (
               <Route path="my-leaves" element={<MyLeaves />} />
               <Route path="my-attendance" element={<MyAttendance />} />
               <Route path="my-documents" element={<MyDocuments />} />
-              <Route path="my-payslips" element={<NotFound />} />
-              <Route path="my-performance" element={<NotFound />} />
+              <Route path="my-payslips" element={<PayslipList />} />
+              <Route path="my-performance" element={<PerformanceDashboard />} />
               <Route path="help-desk" element={<NotFound />} />
             </Route>
 
