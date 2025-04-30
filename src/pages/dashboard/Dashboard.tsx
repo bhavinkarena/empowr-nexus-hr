@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -11,18 +12,19 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
   Legend,
 } from "recharts";
-import { Clock, Calendar, FileCheck, DollarSign } from "lucide-react";
+import { Clock, Calendar, FileCheck, DollarSign, Users, Briefcase, Building } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Loader } from "@/components/ui/Loader";
 import { useEffect, useState } from "react";
 
+// Sample data for charts and visualizations
 const leaveData = [
   { name: 'Approved', value: 8 },
   { name: 'Pending', value: 2 },
@@ -33,6 +35,24 @@ const attendanceData = [
   { month: 'Jan', present: 21, leave: 1, absent: 0 },
   { month: 'Feb', present: 18, leave: 2, absent: 0 },
   { month: 'Mar', present: 20, leave: 1, absent: 1 },
+];
+
+// Department data for admin dashboard
+const departmentData = [
+  { name: 'HR', count: 12 },
+  { name: 'IT', count: 24 },
+  { name: 'Finance', count: 18 },
+  { name: 'Marketing', count: 16 },
+  { name: 'Operations', count: 22 },
+];
+
+// Weekly attendance data for admin dashboard
+const weeklyAttendanceData = [
+  { day: 'Mon', present: 96, absent: 4, leave: 8 },
+  { day: 'Tue', present: 92, absent: 3, leave: 13 },
+  { day: 'Wed', present: 94, absent: 2, leave: 12 },
+  { day: 'Thu', present: 90, absent: 5, leave: 15 },
+  { day: 'Fri', present: 85, absent: 6, leave: 17 },
 ];
 
 const COLORS = ['#9b87f5', '#F2FCE2', '#D3E4FD', '#FEF7CD'];
@@ -139,7 +159,7 @@ export default function Dashboard() {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <RechartsTooltip />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -165,7 +185,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip />
+                  <RechartsTooltip />
                   <Legend />
                   <Bar dataKey="present" stackId="a" fill="#9b87f5" />
                   <Bar dataKey="leave" stackId="a" fill="#FEC6A1" />
@@ -260,7 +280,7 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip />
+                <RechartsTooltip />
                 <Bar dataKey="count" fill="#9b87f5" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -291,7 +311,7 @@ export default function Dashboard() {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <RechartsTooltip />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
@@ -309,7 +329,7 @@ export default function Dashboard() {
         <CardContent className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={attendanceData}
+              data={weeklyAttendanceData}
               margin={{
                 top: 20,
                 right: 30,
@@ -320,7 +340,7 @@ export default function Dashboard() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" />
               <YAxis />
-              <Tooltip />
+              <RechartsTooltip />
               <Legend />
               <Bar dataKey="present" stackId="a" fill="#9b87f5" />
               <Bar dataKey="absent" stackId="a" fill="#FEC6A1" />
