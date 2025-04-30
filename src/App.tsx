@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ import DesignationDirectory from "./pages/designations/DesignationDirectory";
 import PayrollManagement from "./pages/admin/PayrollManagement";
 import RecruitmentManagement from "./pages/admin/RecruitmentManagement";
 import PerformanceManagement from "./pages/admin/PerformanceManagement";
+import HolidayManagement from "./pages/admin/HolidayManagement";
 
 // Employee Pages
 import MyProfile from "./pages/employee/MyProfile";
@@ -63,6 +65,7 @@ const App = () => (
               <Route path="payroll" element={<PayrollManagement />} />
               <Route path="recruitment" element={<RecruitmentManagement />} />
               <Route path="performance" element={<PerformanceManagement />} />
+              <Route path="holidays" element={<HolidayManagement />} />
               
               {/* Employee Routes */}
               <Route path="my-profile" element={<MyProfile />} />
