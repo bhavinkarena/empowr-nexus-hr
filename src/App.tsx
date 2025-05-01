@@ -23,6 +23,7 @@ import PayrollManagement from "./pages/admin/PayrollManagement";
 import RecruitmentManagement from "./pages/admin/RecruitmentManagement";
 import PerformanceManagement from "./pages/admin/PerformanceManagement";
 import HolidayManagement from "./pages/admin/HolidayManagement";
+import JobManagement from "./pages/admin/JobManagement";
 
 // Employee Pages
 import MyProfile from "./pages/employee/MyProfile";
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="attendance" element={<AttendanceManagement />} />
               <Route path="payroll" element={<PayrollManagement />} />
               <Route path="recruitment" element={<RecruitmentManagement />} />
+              <Route path="jobs" element={<JobManagement />} />
               <Route path="performance" element={<PerformanceManagement />} />
               <Route path="holidays" element={<HolidayManagement />} />
               

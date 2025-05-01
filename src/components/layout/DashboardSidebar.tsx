@@ -1,3 +1,4 @@
+
 import { 
   Users, LayoutDashboard, Calendar, ClipboardCheck, 
   DollarSign, Briefcase, Award, Settings, LogOut, 
@@ -96,6 +97,11 @@ export function DashboardSidebar() {
       title: 'Recruitment',
       icon: Briefcase,
       url: '/dashboard/recruitment',
+    },
+    {
+      title: 'Jobs',
+      icon: FileText,
+      url: '/dashboard/jobs',
     },
     {
       title: 'Performance',
