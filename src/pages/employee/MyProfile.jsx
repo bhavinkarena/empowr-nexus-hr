@@ -1,39 +1,15 @@
 
 import { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Phone, MapPin, FileText, Building, Briefcase, Clock, Calendar, Edit, UploadCloud } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { toast } from "@/components/ui/use-toast"
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+// Import our new components
+import ProfileSidebar from "@/components/employee/ProfileSidebar";
+import ProfilePersonalTab from "@/components/employee/ProfilePersonalTab";
+import ProfileJobTab from "@/components/employee/ProfileJobTab";
+import ProfileFinancialTab from "@/components/employee/ProfileFinancialTab";
+import ProfileDocumentsTab from "@/components/employee/ProfileDocumentsTab";
 
 // Mock employee data - in a real app, this would be fetched from an API
 const EMPLOYEE_DATA = {
@@ -62,56 +38,13 @@ const EMPLOYEE_DATA = {
   ]
 };
 
-// Document types for the dropdown
-const DOCUMENT_TYPES = [
-  { id: "resume", name: "Resume" },
-  { id: "idProof", name: "ID Proof" },
-  { id: "joiningLetter", name: "Joining Letter" },
-  { id: "certificate", name: "Certificate" },
-  { id: "other", name: "Other" }
-];
-
 export default function MyProfile() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("personal");
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   
   // In a real implementation, we would fetch employee data based on the user's ID
   // For now, we'll just use our mock data
   const employeeData = EMPLOYEE_DATA;
-  
-  // Form for document upload
-  const form = useForm({
-    defaultValues: {
-      documentType: "",
-      document: null
-    }
-  });
-  
-  const handleDocumentUpload = (data) => {
-    // In a real implementation, we would upload the document to a server
-    console.log("Document upload data:", data);
-    
-    // Add the document to the list (in a real app, this would come from the server response)
-    const newDocument = {
-      name: DOCUMENT_TYPES.find(type => type.id === data.documentType)?.name || "Document",
-      url: "#",
-      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-    };
-    
-    // Close the modal
-    setIsUploadModalOpen(false);
-    
-    // Reset the form
-    form.reset();
-    
-    // Show success message
-    toast({
-      title: "Document Uploaded",
-      description: `${newDocument.name} has been uploaded successfully.`,
-    });
-  };
   
   return (
     <div className="animate-fade-in">
@@ -122,138 +55,7 @@ export default function MyProfile() {
         <div className="col-span-1">
           <Card>
             <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center">
-                <Avatar className="h-24 w-24 mb-4">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback className="text-lg bg-hr-purple-300 text-white">
-                    {user?.fullName?.split(' ').map(n => n[0]).join('') || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <h2 className="text-2xl font-bold">{user?.fullName || employeeData.name}</h2>
-                <p className="text-muted-foreground mb-2">{employeeData.designation}</p>
-                
-                <div className="flex space-x-1 text-xs">
-                  <span className="px-2 py-1 bg-hr-green text-green-700 rounded-md">
-                    {employeeData.status}
-                  </span>
-                  <span className="px-2 py-1 bg-hr-blue text-blue-700 rounded-md">
-                    {employeeData.employmentType}
-                  </span>
-                </div>
-                
-                <div className="w-full border-t my-6"></div>
-                
-                <div className="w-full">
-                  <div className="flex items-start mb-4">
-                    <Mail className="h-4 w-4 mt-1 mr-2 text-gray-500" />
-                    <div className="text-left">
-                      <p className="text-xs text-muted-foreground">Email</p>
-                      <p className="text-sm">{user?.email || employeeData.email}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start mb-4">
-                    <Phone className="h-4 w-4 mt-1 mr-2 text-gray-500" />
-                    <div className="text-left">
-                      <p className="text-xs text-muted-foreground">Phone</p>
-                      <p className="text-sm">{employeeData.phone}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start mb-4">
-                    <Building className="h-4 w-4 mt-1 mr-2 text-gray-500" />
-                    <div className="text-left">
-                      <p className="text-xs text-muted-foreground">Department</p>
-                      <p className="text-sm">{employeeData.department}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start mb-4">
-                    <Briefcase className="h-4 w-4 mt-1 mr-2 text-gray-500" />
-                    <div className="text-left">
-                      <p className="text-xs text-muted-foreground">Employee ID</p>
-                      <p className="text-sm">{employeeData.employeeId}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <Calendar className="h-4 w-4 mt-1 mr-2 text-gray-500" />
-                    <div className="text-left">
-                      <p className="text-xs text-muted-foreground">Join Date</p>
-                      <p className="text-sm">{employeeData.joinDate}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="w-full border-t my-6"></div>
-                
-                <Dialog open={isUpdateModalOpen} onOpenChange={setIsUpdateModalOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-hr-purple-300 hover:bg-hr-purple-400">
-                      <Edit className="mr-2 h-4 w-4" /> Update Info
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                      <DialogTitle>Update Profile Information</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your profile information here. Click save when you're done.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">Phone Number</label>
-                          <input
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            placeholder={employeeData.phone}
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">Personal Email</label>
-                          <input
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            placeholder={employeeData.personalEmail}
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">Emergency Contact</label>
-                          <input
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            placeholder={employeeData.emergencyContact}
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">Address</label>
-                          <textarea
-                            className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            placeholder={employeeData.address}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-3">
-                      <Button variant="outline" onClick={() => setIsUpdateModalOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button 
-                        className="bg-hr-purple-300 hover:bg-hr-purple-400"
-                        onClick={() => {
-                          // Here you would handle the update logic
-                          setIsUpdateModalOpen(false);
-                          toast({
-                            title: "Profile Updated",
-                            description: "Your profile information has been updated successfully.",
-                          });
-                        }}
-                      >
-                        Save Changes
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
+              <ProfileSidebar userData={employeeData} user={user} />
             </CardContent>
           </Card>
         </div>
@@ -269,236 +71,19 @@ export default function MyProfile() {
             </TabsList>
             
             <TabsContent value="personal" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Personal Information</CardTitle>
-                  <CardDescription>
-                    Personal contact details and information
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Personal Email
-                      </p>
-                      <p>{employeeData.personalEmail}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Emergency Contact
-                      </p>
-                      <p>{employeeData.emergencyContact}</p>
-                    </div>
-                    
-                    <div className="space-y-1 col-span-1 md:col-span-2">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Residential Address
-                      </p>
-                      <div className="flex items-start">
-                        <MapPin className="h-4 w-4 mt-1 mr-2 text-gray-500" />
-                        <p>{employeeData.address}</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ProfilePersonalTab userData={employeeData} />
             </TabsContent>
             
             <TabsContent value="job" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Job Information</CardTitle>
-                  <CardDescription>
-                    Employment details and job information
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Department
-                      </p>
-                      <p>{employeeData.department}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Designation
-                      </p>
-                      <p>{employeeData.designation}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Employment Type
-                      </p>
-                      <p>{employeeData.employmentType}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Reporting To
-                      </p>
-                      <p>{employeeData.reportingTo}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Work Location
-                      </p>
-                      <p>{employeeData.workLocation}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Join Date
-                      </p>
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                        <p>{employeeData.joinDate}</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ProfileJobTab userData={employeeData} />
             </TabsContent>
             
             <TabsContent value="financial" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Financial Information</CardTitle>
-                  <CardDescription>
-                    Banking and financial details
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Bank Name
-                      </p>
-                      <p>{employeeData.bankName}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Account Number
-                      </p>
-                      <p>{employeeData.accountNumber}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        PAN Number
-                      </p>
-                      <p>{employeeData.panNumber}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ProfileFinancialTab userData={employeeData} />
             </TabsContent>
             
             <TabsContent value="documents" className="space-y-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <div>
-                    <CardTitle>Documents</CardTitle>
-                    <CardDescription>
-                      Your documents and certificates
-                    </CardDescription>
-                  </div>
-                  <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline">
-                        <UploadCloud className="mr-2 h-4 w-4" /> Upload Document
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px]">
-                      <DialogHeader>
-                        <DialogTitle>Upload Document</DialogTitle>
-                        <DialogDescription>
-                          Upload a new document to your profile. Supported formats: PDF, DOC, DOCX, JPG, PNG.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <form onSubmit={form.handleSubmit(handleDocumentUpload)} className="space-y-6">
-                        <div className="space-y-4 py-2">
-                          <div className="space-y-2">
-                            <Label htmlFor="documentType">Document Type</Label>
-                            <Select
-                              onValueChange={(value) => form.setValue("documentType", value)}
-                              defaultValue={form.getValues("documentType")}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select document type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {DOCUMENT_TYPES.map((type) => (
-                                  <SelectItem key={type.id} value={type.id}>
-                                    {type.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="document">Document</Label>
-                            <div className="border border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors">
-                              <UploadCloud className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                              <p className="text-sm mb-2">Drag and drop your file here, or click to browse</p>
-                              <p className="text-xs text-muted-foreground">Maximum file size: 10MB</p>
-                              <Input
-                                id="document"
-                                type="file"
-                                className="hidden"
-                                onChange={(e) => {
-                                  if (e.target.files && e.target.files[0]) {
-                                    form.setValue("document", e.target.files[0]);
-                                  }
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <DialogFooter className="flex justify-end gap-3">
-                          <Button variant="outline" onClick={() => setIsUploadModalOpen(false)}>
-                            Cancel
-                          </Button>
-                          <Button 
-                            type="submit"
-                            className="bg-hr-purple-300 hover:bg-hr-purple-400"
-                          >
-                            Upload Document
-                          </Button>
-                        </DialogFooter>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {employeeData.documents.map((doc, index) => (
-                      <div 
-                        key={index}
-                        className="flex items-center justify-between p-4 border rounded-md hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex items-center">
-                          <FileText className="h-5 w-5 mr-3 text-hr-purple-300" />
-                          <div>
-                            <p className="font-medium">{doc.name}</p>
-                            <p className="text-xs text-muted-foreground">Uploaded on {doc.date}</p>
-                          </div>
-                        </div>
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <ProfileDocumentsTab documents={employeeData.documents} />
             </TabsContent>
           </Tabs>
         </div>
