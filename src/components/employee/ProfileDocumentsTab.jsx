@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { FileText, UploadCloud } from "lucide-react";
+import { FileText, UploadCloud, Pencil, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { 
   Card, 
@@ -19,6 +19,17 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,9 +46,19 @@ const DOCUMENT_TYPES = [
 
 const ProfileDocumentsTab = ({ documents }) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
   
   // Form for document upload
   const form = useForm({
+    defaultValues: {
+      documentType: "",
+      document: null
+    }
+  });
+  
+  // Form for document update
+  const updateForm = useForm({
     defaultValues: {
       documentType: "",
       document: null
@@ -66,6 +87,43 @@ const ProfileDocumentsTab = ({ documents }) => {
       title: "Document Uploaded",
       description: `${newDocument.name} has been uploaded successfully.`,
     });
+  };
+
+  const handleDocumentUpdate = (data) => {
+    // In a real implementation, we would update the document on the server
+    console.log("Document update data:", data);
+    console.log("Updating document:", selectedDocument);
+    
+    // Close the modal
+    setIsUpdateModalOpen(false);
+    
+    // Reset the form
+    updateForm.reset();
+    
+    // Show success message
+    toast({
+      title: "Document Updated",
+      description: `${selectedDocument.name} has been updated successfully.`,
+    });
+  };
+  
+  const handleDeleteDocument = (doc) => {
+    // In a real implementation, we would delete the document from the server
+    console.log("Deleting document:", doc);
+    
+    // Show success message
+    toast({
+      title: "Document Deleted",
+      description: `${doc.name} has been deleted successfully.`,
+    });
+  };
+  
+  const openUpdateModal = (doc) => {
+    setSelectedDocument(doc);
+    updateForm.setValue("documentType", 
+      DOCUMENT_TYPES.find(type => type.name === doc.name)?.id || "other"
+    );
+    setIsUpdateModalOpen(true);
   };
 
   return (
@@ -159,13 +217,113 @@ const ProfileDocumentsTab = ({ documents }) => {
                   <p className="text-xs text-muted-foreground">Uploaded on {doc.date}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm">
-                View
-              </Button>
+              <div className="flex gap-2">
+                {/* Update Document Button */}
+                <Button variant="ghost" size="sm" onClick={() => openUpdateModal(doc)}>
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                
+                {/* Delete Document Button */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete the document "{doc.name}". 
+                        This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={() => handleDeleteDocument(doc)}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                
+                {/* View Document Button */}
+                <Button variant="ghost" size="sm">
+                  View
+                </Button>
+              </div>
             </div>
           ))}
         </div>
       </CardContent>
+      
+      {/* Update Document Modal */}
+      <Dialog open={isUpdateModalOpen} onOpenChange={setIsUpdateModalOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Update Document</DialogTitle>
+            <DialogDescription>
+              Upload a new version of this document. Supported formats: PDF, DOC, DOCX, JPG, PNG.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={updateForm.handleSubmit(handleDocumentUpdate)} className="space-y-6">
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="documentType">Document Type</Label>
+                <Select
+                  onValueChange={(value) => updateForm.setValue("documentType", value)}
+                  value={updateForm.getValues("documentType")}
+                  disabled={true}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Document type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DOCUMENT_TYPES.map((type) => (
+                      <SelectItem key={type.id} value={type.id}>
+                        {type.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="document">Document</Label>
+                <div className="border border-dashed border-gray-300 rounded-md p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors">
+                  <UploadCloud className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm mb-2">Drag and drop your file here, or click to browse</p>
+                  <p className="text-xs text-muted-foreground">Maximum file size: 10MB</p>
+                  <Input
+                    id="updateDocument"
+                    type="file"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        updateForm.setValue("document", e.target.files[0]);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <DialogFooter className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setIsUpdateModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                className="bg-hr-purple-300 hover:bg-hr-purple-400"
+              >
+                Update Document
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
