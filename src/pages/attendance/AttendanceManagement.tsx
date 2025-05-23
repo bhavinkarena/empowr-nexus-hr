@@ -32,7 +32,8 @@ import {
   XCircle, 
   HomeIcon,
   UserCheck,
-  Download
+  Download,
+  Eye
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -42,6 +43,14 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 // Mock attendance data
 const attendanceData = [
@@ -53,6 +62,7 @@ const attendanceData = [
     clockIn: "09:00 AM",
     clockOut: "06:15 PM",
     hours: "9.25",
+    workLog: "Completed the quarterly sales report and prepared for tomorrow's client meeting. Helped new team members with onboarding procedures."
   },
   {
     id: "2",
@@ -62,6 +72,7 @@ const attendanceData = [
     clockIn: "09:30 AM",
     clockOut: "05:45 PM",
     hours: "8.25",
+    workLog: "Worked on the marketing campaign design. Had a video call with the design team regarding the new brand assets."
   },
   {
     id: "3",
@@ -71,6 +82,7 @@ const attendanceData = [
     clockIn: "-",
     clockOut: "-",
     hours: "0",
+    workLog: ""
   },
   {
     id: "4",
@@ -80,6 +92,7 @@ const attendanceData = [
     clockIn: "08:45 AM",
     clockOut: "06:00 PM",
     hours: "9.25",
+    workLog: "Resolved 5 critical customer support tickets. Updated the knowledge base with new troubleshooting steps."
   },
   {
     id: "5",
@@ -89,6 +102,7 @@ const attendanceData = [
     clockIn: "-",
     clockOut: "-",
     hours: "0",
+    workLog: "On approved annual leave"
   },
 ];
 
@@ -128,6 +142,8 @@ export default function AttendanceManagement() {
   const [date, setDate] = useState<Date>(new Date());
   const [month, setMonth] = useState<string>(format(new Date(), 'MMMM'));
   const [year, setYear] = useState<string>(new Date().getFullYear().toString());
+  const [selectedRecord, setSelectedRecord] = useState<typeof attendanceData[0] | null>(null);
+  const [showAttendanceDetail, setShowAttendanceDetail] = useState(false);
   
   // Array of months
   const months = [
@@ -139,6 +155,11 @@ export default function AttendanceManagement() {
   // Generate an array of years (current year and 5 years before)
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 6 }, (_, i) => (currentYear - 5 + i).toString());
+
+  const handleViewAttendance = (record: typeof attendanceData[0]) => {
+    setSelectedRecord(record);
+    setShowAttendanceDetail(true);
+  };
   
   return (
     <div className="animate-fade-in">
@@ -172,6 +193,67 @@ export default function AttendanceManagement() {
           </Button>
         </div>
       </div>
+      
+      {/* Attendance Detail Modal */}
+      <Dialog open={showAttendanceDetail} onOpenChange={setShowAttendanceDetail}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>Attendance Details</DialogTitle>
+            <DialogDescription>
+              Detailed attendance information for {selectedRecord?.employee} on {format(new Date(selectedRecord?.date || Date.now()), "MMMM d, yyyy")}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedRecord && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Employee Name</p>
+                  <p className="font-medium">{selectedRecord.employee}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Status</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    {getStatusIcon(selectedRecord.status)}
+                    <Badge className={getStatusBadgeClass(selectedRecord.status)}>
+                      {selectedRecord.status}
+                    </Badge>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Clock In</p>
+                  <p className="font-medium">{selectedRecord.clockIn}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Clock Out</p>
+                  <p className="font-medium">{selectedRecord.clockOut}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Working Hours</p>
+                  <p className="font-medium">{selectedRecord.hours} hrs</p>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Daily Work Log</p>
+                <div className="bg-gray-50 p-3 rounded-md min-h-[100px]">
+                  {selectedRecord.workLog ? (
+                    <p>{selectedRecord.workLog}</p>
+                  ) : (
+                    <p className="text-muted-foreground italic">No work log available for this day</p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex justify-end">
+                <DialogClose asChild>
+                  <Button>Close</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card>
@@ -272,9 +354,20 @@ export default function AttendanceManagement() {
                         <TableCell>{record.clockOut}</TableCell>
                         <TableCell>{record.hours} hrs</TableCell>
                         <TableCell>
-                          <Button size="sm" variant="outline">
-                            Edit
-                          </Button>
+                          <div className="flex space-x-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleViewAttendance(record)}
+                              className="flex items-center"
+                            >
+                              <Eye className="h-3.5 w-3.5 mr-1" />
+                              View
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              Edit
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
