@@ -22,6 +22,17 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMont
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from "@/components/ui/dialog";
 
 // Mock attendance data
 const ATTENDANCE_DATA = [
@@ -56,6 +67,8 @@ export default function MyAttendance() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [clockedIn, setClockedIn] = useState(false);
   const [clockInTime, setClockInTime] = useState<string | null>(null);
+  const [workLog, setWorkLog] = useState<string>("");
+  const [showWorkLogDialog, setShowWorkLogDialog] = useState(false);
   
   // Check if today is a working day (for clock in/out demonstration)
   const today = new Date();
@@ -73,17 +86,31 @@ export default function MyAttendance() {
     });
   };
   
-  const handleClockOut = () => {
+  const handleClockOutClick = () => {
+    setShowWorkLogDialog(true);
+  };
+  
+  const handleClockOut = (skipLog: boolean = false) => {
     const now = new Date();
     const formattedTime = format(now, "HH:mm");
+    
+    setShowWorkLogDialog(false);
     
     toast({
       title: "Clocked Out",
       description: `You have clocked out at ${formattedTime}. Total hours: ${calculateHours(clockInTime || "09:00", formattedTime)}.`,
     });
     
+    if (!skipLog && workLog.trim()) {
+      toast({
+        title: "Work Log Submitted",
+        description: "Your work log has been submitted successfully.",
+      });
+    }
+    
     setClockedIn(false);
     setClockInTime(null);
+    setWorkLog("");
   };
   
   const calculateHours = (startTime: string, endTime: string) => {
@@ -156,7 +183,7 @@ export default function MyAttendance() {
               
               {!isWeekend && (
                 clockedIn ? (
-                  <Button onClick={handleClockOut} variant="destructive">
+                  <Button onClick={handleClockOutClick} variant="destructive">
                     <Clock className="mr-2 h-4 w-4" />
                     Clock Out
                   </Button>
@@ -190,6 +217,42 @@ export default function MyAttendance() {
           )}
         </CardContent>
       </Card>
+      
+      {/* Work Log Dialog */}
+      <Dialog open={showWorkLogDialog} onOpenChange={setShowWorkLogDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Daily Work Log</DialogTitle>
+            <DialogDescription>
+              Enter your work summary for today. This is optional and you can skip it.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <Textarea
+              placeholder="Enter your work summary for today..."
+              value={workLog}
+              onChange={(e) => setWorkLog(e.target.value)}
+              className="min-h-[150px]"
+            />
+          </div>
+          
+          <DialogFooter className="flex justify-between sm:justify-between">
+            <Button 
+              variant="outline" 
+              onClick={() => handleClockOut(true)}
+            >
+              Skip & Clock Out
+            </Button>
+            <Button 
+              onClick={() => handleClockOut(false)}
+              className="bg-hr-purple-300 hover:bg-hr-purple-400"
+            >
+              Submit & Clock Out
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card className="col-span-1">
